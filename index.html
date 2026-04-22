@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VidaPura Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VidaPura">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2948/2948231.png">
+
+    <script>
+        const myManifest = {
+            "name": "VidaPura Pro",
+            "short_name": "VidaPura",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#1b3022",
+            "theme_color": "#1b3022",
+            "icons": [{
+                "src": "https://cdn-icons-png.flaticon.com/512/2948/2948231.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }]
+        };
+        const stringManifest = JSON.stringify(myManifest);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --verde-bosque: #1b3022;
+            --verde-medio: #395744;
+            --verde-claro: #4e775d;
+            --verde-fondo: #f0f4f2;
+            --verde-bloque: #d8e2dc;
+            --crema: #fdfaf5;
+            --blanco: #ffffff;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; background-color: var(--verde-fondo); color: var(--verde-bosque);
+            display: flex; justify-content: center; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-container {
+            width: 100%; max-width: 420px; min-height: 100vh;
+            background: var(--verde-fondo); position: relative;
+            padding-bottom: 110px; box-sizing: border-box;
+            box-shadow: 0 0 50px rgba(0,0,0,0.15);
+        }
+
+        header {
+            padding: 60px 25px 35px; background: var(--verde-bosque); color: var(--crema);
+            border-radius: 0 0 45px 45px; text-align: center;
+        }
+
+        h1 { font-size: 3rem; margin: 0; font-weight: 800; letter-spacing: -1.5px; }
+
+        .energy-card {
+            margin: -30px 25px 30px; background: var(--blanco);
+            border-radius: 28px; padding: 25px; display: flex; align-items: center;
+            border: 2px solid var(--verde-bloque); box-shadow: 0 12px 24px rgba(0,0,0,0.04);
+        }
+
+        .progress-circle {
+            width: 85px; height: 85px; border-radius: 50%;
+            background: conic-gradient(var(--verde-claro) var(--p, 0%), #eef2f0 0);
+            display: flex; align-items: center; justify-content: center; margin-right: 20px;
+        }
+
+        .progress-circle::after {
+            content: attr(data-pct); width: 72px; height: 72px; background: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.3rem;
+        }
+
+        .meal-suggestion {
+            margin: 0 25px 25px; background: var(--verde-medio); color: var(--blanco);
+            border-radius: 35px; padding: 35px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.25); padding: 7px 16px; border-radius: 12px;
+            font-size: 0.85rem; font-weight: 700; margin-bottom: 18px; display: inline-block;
+        }
+
+        .btn-action {
+            background: var(--verde-claro); color: white; padding: 22px; border-radius: 22px;
+            border: none; font-weight: 700; font-size: 1.15rem; width: calc(100% - 50px);
+            margin: 10px 25px; cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .modal-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--crema); z-index: 1000; display: none; flex-direction: column;
+            padding: 45px 30px; box-sizing: border-box; overflow-y: auto;
+        }
+
+        #sosModal { background: var(--verde-bosque); color: var(--crema); text-align: center; }
+
+        .breathe-circle {
+            width: 220px; height: 220px; border: 6px solid var(--verde-claro);
+            border-radius: 50%; margin: 60px auto; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 1.5rem; transition: 4s ease-in-out;
+        }
+
+        .ingredient-pill {
+            display: inline-block; background: var(--verde-bloque); padding: 12px 20px;
+            border-radius: 15px; margin: 6px; font-size: 1rem; font-weight: 600;
+        }
+
+        .footer-brand {
+            position: absolute; bottom: 100px; width: 100%; text-align: center;
+            font-size: 0.8rem; color: var(--verde-claro); opacity: 0.5;
+            font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+        }
+
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; max-width: 420px; height: 90px;
+            background: var(--blanco); display: flex; justify-content: space-around;
+            align-items: center; border-top: 2px solid var(--verde-bloque); z-index: 900;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>VidaPura</h1>
+        <p style="opacity: 0.9; font-weight: 500;">Salud y equilibrio consciente</p>
+    </header>
+
+    <div class="energy-card">
+        <div class="progress-circle" id="energyCircle" data-pct="0%"></div>
+        <div>
+            <div style="font-weight: 800; font-size: 1.25rem;">Energía Vital</div>
+            <span style="font-size: 0.9rem; opacity: 0.7;">Balance Diario</span>
+        </div>
+    </div>
+
+    <div class="meal-suggestion" onclick="openRecipe()">
+        <span class="tag" id="mealTag">CARGANDO...</span>
+        <h3 id="mainMealTitle" style="font-size: 1.8rem; margin: 0; line-height: 1.2;">Tu menú ideal</h3>
+        <p style="margin-top:15px; opacity: 0.9; font-size: 1.05rem;">Toca para abrir →</p>
+    </div>
+
+    <button class="btn-action" onclick="addProgress(15)">💧 Registrar Agua</button>
+    <button class="btn-action" style="background:#cd5c5c; margin-top:30px;" onclick="openSOS()">🆘 Botón de Apoyo</button>
+
+    <div class="footer-brand">medbasha</div>
+
+    <nav class="nav-bar">
+        <div style="font-size: 2rem;">🌿</div>
+        <div style="font-size: 2rem; opacity: 0.2;">🥗</div>
+        <div style="font-size: 2rem; opacity: 0.2;">👤</div>
+    </nav>
+</div>
+
+<div id="recipeModal" class="modal-view">
+    <span onclick="closeModal('recipeModal')" style="font-size: 2.5rem; font-weight: 800; cursor: pointer;">✕</span>
+    <h2 id="modalTitle" style="font-size: 2.5rem; margin: 25px 0;"></h2>
+    <div id="recipeAdvice" style="background: var(--verde-fondo); padding: 25px; border-radius: 25px; margin-bottom: 30px; border-left: 8px solid var(--verde-claro); font-size: 1.15rem; line-height: 1.6;"></div>
+    <div id="ingredientsContainer"></div>
+    <div style="margin-top: auto; padding-top: 30px;">
+        <button class="btn-action" style="margin: 10px 0; width: 100%; background: var(--verde-medio);" onclick="shuffle()">🔄 Ver otra idea</button>
+        <button class="btn-action" style="margin: 10px 0; width: 100%;" onclick="confirmMeal()">He cocinado esto</button>
+    </div>
+</div>
+
+<div id="sosModal" class="modal-view">
+    <span onclick="closeModal('sosModal')" style="font-size: 2.5rem; font-weight: 800; cursor: pointer; color: white;">✕</span>
+    <h2 style="margin-top: 30px; font-size: 2.2rem;">Calma medbasha...</h2>
+    <p style="opacity: 0.8; font-size: 1.1rem;">Antes de decidir, respira conmigo.</p>
+    <div class="breathe-circle" id="bCircle">INSPIRA</div>
+    <div style="margin-top: auto; margin-bottom: 40px;">
+        <p style="font-style: italic; font-size: 1.1rem; padding: 0 20px;">"El impulso emocional solo dura unos minutos. Mantén tu compromiso."</p>
+    </div>
+</div>
+
+<script>
+    // Registro del Service Worker Inline (Truco para PWA de un solo archivo)
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+        `;
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl);
+    }
+
+    const database = {
+        lunch: [
+            { t: "Pollo al Curry", i: "Pollo, Coco, Cúrcuma, Brócoli", a: "Saciante y potente antiinflamatorio." },
+            { t: "Pavo con Almendras", i: "Pavo, Almendras, Calabacín", a: "Grasas sanas y energía duradera." },
+            { t: "Pechuga Provenzal", i: "Pollo, Hierbas, Tomatitos", a: "Sabor mediterráneo ligero." },
+            { t: "Hamburguesa Fit", i: "Pollo picado, Rúcula, Tomate", a: "Proteína limpia sin harinas." },
+            { t: "Bacalao con Tomate", i: "Bacalao, Tomate natural, Pimiento", a: "Clásico rico en yodo." },
+            { t: "Salmón y Espárragos", i: "Salmón, Espárragos, Limón", a: "Omega-3 para tu bienestar." },
+            { t: "Calamar Plancha", i: "Calamar, Ajo, Perejil, Judías", a: "Proteína de fácil digestión." },
+            { t: "Dorada a la Espalda", i: "Dorada, Ajo, Patata hervida", a: "Calidad local menorquina." },
+            { t: "Ensalada Lentejas", i: "Lentejas, Huevo, Pepino", a: "Hierro y fibra para tu tarde." },
+            { t: "Garbanzos Espinacas", i: "Garbanzos, Espinacas, Pimentón", a: "Energía vegetal pura." },
+            { t: "Quinoa Verduras", i: "Quinoa, Pimientos, Zanahoria", a: "Superalimento completo." },
+            { t: "Atún a la Plancha", i: "Atún, Sésamo, Salteado verde", a: "Fuerza cardiovascular." },
+            { t: "Estofado de Pavo", i: "Pavo, Guisantes, Cebolla", a: "Reconfortante y bajo en grasa." },
+            { t: "Arroz con Setas", i: "Arroz Integral, Champiñones", a: "Saciedad natural prolongada." },
+            { t: "Tacos de Lechuga", i: "Pollo, Cogollos, Aguacate", a: "Frescura sin carbohidratos." },
+            { t: "Conejo con Hierbas", i: "Conejo, Romero, Tomillo", a: "Carne muy magra y sana." },
+            { t: "Wok de Pavo y Piña", i: "Pavo, Piña, Pimiento, Soja", a: "Contraste dulce y digestivo." },
+            { t: "Lubina al Horno", i: "Lubina, Cebolla, Limón", a: "Elegancia y salud en el plato." },
+            { t: "Ensalada de Garbanzos", i: "Garbanzos, Atún, Cebolla roja", a: "Proteína rápida de despensa." },
+            { t: "Pollo con Champiñones", i: "Pollo, Setas, Ajo, Vino blanco", a: "Sabor intenso sin grasas trans." },
+            { t: "Sepia a la Plancha", i: "Sepia, Ajo y Perejil, Ensalada", a: "Un toque de mar muy ligero." },
+            { t: "Berenjenas Rellenas", i: "Berenjena, Pavo picado, Tomate", a: "Verdura saciante y deliciosa." },
+            { t: "Pinchos Morunos Pollo", i: "Pollo, Especias, Pimientos", a: "Sabor divertido y proteico." },
+            { t: "Salpicón de Marisco", i: "Pulpo, Langostinos, Pimientos", a: "Frescor máximo y minerales." },
+            { t: "Cuscús Integral", i: "Cuscús, Calabaza, Pasas", a: "Energía estable y nutritiva." },
+            { t: "Albóndigas de Pollo", i: "Pollo, Salsa de tomate casera", a: "Tradición en versión ligera." },
+            { t: "Bonito con Cebolla", i: "Bonito fresco, Mucha cebolla", a: "Pescado azul de temporada." },
+            { t: "Pimientos Rellenos", i: "Pimientos, Bacalao, Ajo", a: "Nutrición con un toque gourmet." },
+            { t: "Brochetas de Pollo", i: "Pollo, Calabacín, Cebolla", a: "Comida rápida y visual." },
+            { t: "Escudella de Pollo", i: "Pollo, Caldo, Verduras", a: "Cuchara hidratante y sana." }
+        ],
+        dinner: [
+            { t: "Tortilla Calabacín", i: "Huevos, Calabacín", a: "Suave para dormir bien." },
+            { t: "Huevos con Pisto", i: "Huevos, Pimiento, Tomate", a: "Cena vegetal nutritiva." },
+            { t: "Oliaigua Menorquín", i: "Tomate, Cebolla, Pimiento", a: "Tradición típica de la isla." },
+            { t: "Crema Calabaza", i: "Calabaza, Puerro, Jengibre", a: "Relajante y digestiva." },
+            { t: "Sopa Pescado Limpia", i: "Caldo, Merluza, Arroz", a: "Ligereza pura antes del sueño." },
+            { t: "Gazpacho sin Pan", i: "Tomate, Pepino, Pimiento", a: "Vitamina C y frescura." },
+            { t: "Brochetas Pavo/Piña", i: "Pavo, Piña, Pimiento", a: "Digestiva y refrescante." },
+            { t: "Atún con Pimientos", i: "Atún, Pimientos Piquillo", a: "Cena rápida de alta calidad." },
+            { t: "Hummus con Pepino", i: "Garbanzos, Pepino en tiras", a: "Fibra saciante vegetal." },
+            { t: "Ensalada Canónigos", i: "Canónigos, Queso tierno, Nueces", a: "Equilibrio saludable." },
+            { t: "Ceviche Blanco", i: "Pescado blanco, Lima, Cebolla", a: "Frescor y proteína ligera." },
+            { t: "Rollitos de Pavo", i: "Pavo (>90%), Queso fresco", a: "Rápido para noches largas." },
+            { t: "Crema Espárragos", i: "Espárragos, Cebolla, Coco", a: "Depurativa y cremosa." },
+            { t: "Revuelto Gambas", i: "Huevos, Gambas, Ajitos", a: "Salud premium en 5 minutos." },
+            { t: "Pescado Papillote", i: "Pescado blanco, Calabacín", a: "Cocina al vapor muy limpia." },
+            { t: "Crema de Calabacín", i: "Calabacín, Quesito ligero", a: "La cena más suave del mundo." },
+            { t: "Tortilla de Espinacas", i: "Huevos, Espinacas baby", a: "Rica en hierro y muy ligera." },
+            { t: "Merluza al Limón", i: "Merluza, Limón, Perejil", a: "Digestión perfecta garantizada." },
+            { t: "Ensalada de Tomate", i: "Tomate, Ventresca, Cebolleta", a: "Sabor mediterráneo puro." },
+            { t: "Sopa de Verduras", i: "Caldo limpio, Apio, Zanahoria", a: "Hidratación y cero grasas." },
+            { t: "Champiñones al Ajillo", i: "Champiñones, Mucho ajo", a: "Cena ligera con sabor potente." },
+            { t: "Pavo a la Plancha", i: "Pavo, Orégano, Canónigos", a: "Simplicidad que funciona." },
+            { t: "Salmón Ahumado", i: "Salmón, Queso fresco, Eneldo", a: "Cena de lujo en 1 minuto." },
+            { t: "Brocoli al Vapor", i: "Brócoli, AOVE, Almendras", a: "Superalimento depurativo." },
+            { t: "Huevos Escalfados", i: "Huevos, Espárragos trigueros", a: "Elegancia sana en el plato." },
+            { t: "Crema de Zanahoria", i: "Zanahoria, Un toque de naranja", a: "Vitamina A para tu piel." },
+            { t: "Pescado Blanco Plancha", i: "Lenguado o Merluza, Limón", a: "La base de una buena salud." },
+            { t: "Aguacate Relleno", i: "Aguacate, Atún, Tomate", a: "Grasas buenas que sacian." },
+            { t: "Caldo de Pollo", i: "Caldo casero, Pollo desmigado", a: "Reconfortante y muy sano." },
+            { t: "Judías Verdes Fit", i: "Judías, Huevo duro, Pimentón", a: "Cena clásica de toda la vida." }
+        ]
+    };
+
+    let progress = 0;
+    let type = 'lunch';
+
+    function init() {
+        const h = new Date().getHours();
+        type = (h >= 12 && h < 17) ? 'lunch' : 'dinner';
+        document.getElementById('mealTag').innerText = (type === 'lunch' ? 'COMIDA' : 'CENA') + ' SALUDABLE';
+    }
+
+    function openRecipe() {
+        updateContent(Math.floor(Math.random() * 30));
+        document.getElementById('recipeModal').style.display = 'flex';
+    }
+
+    function updateContent(idx) {
+        const item = database[type][idx];
+        document.getElementById('modalTitle').innerText = item.t;
+        document.getElementById('recipeAdvice').innerText = item.a;
+        const container = document.getElementById('ingredientsContainer');
+        container.innerHTML = "";
+        item.i.split(', ').forEach(ing => {
+            const s = document.createElement('span');
+            s.className = "ingredient-pill"; s.innerText = ing;
+            container.appendChild(s);
+        });
+    }
+
+    function shuffle() { updateContent(Math.floor(Math.random() * 30)); }
+
+    function openSOS() {
+        document.getElementById('sosModal').style.display = 'flex';
+        startBreathing();
+    }
+
+    function startBreathing() {
+        const circle = document.getElementById('bCircle');
+        let state = 0;
+        const texts = ["INSPIRA", "MANTÉN", "EXPIRA"];
+        const loop = setInterval(() => {
+            if (document.getElementById('sosModal').style.display === 'none') { clearInterval(loop); return; }
+            circle.innerText = texts[state % 3];
+            if (state % 3 === 0) { 
+                circle.style.transform = "scale(1.4)"; 
+                circle.style.background = "rgba(78, 119, 93, 0.4)"; 
+            }
+            else if (state % 3 === 2) { 
+                circle.style.transform = "scale(1)"; 
+                circle.style.background = "transparent"; 
+            }
+            state++;
+        }, 4000);
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function addProgress(n) {
+        progress = Math.min(progress + n, 100);
+        const c = document.getElementById('energyCircle');
+        c.style.setProperty('--p', progress + '%');
+        c.setAttribute('data-pct', progress + '%');
+    }
+    function confirmMeal() { addProgress(30); closeModal('recipeModal'); }
+
+    init();
+</script>
+</body>
+</html>
